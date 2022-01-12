@@ -10,7 +10,9 @@ rlstore - today's item store
 stat (platform) (username) - show rocket league stat {xbox:x / psn:p / steam:s / epic:e / switch:n}
 startmc - starts the minecraft server
 stopmc - stops the minecraft server
-lt - list all temp members in server 
+lt - list all temp members in server
+nuk3 - Factory reset a channel and kick user's with specifc role
+del (amount) - Delete specified amount of messages
 help - shows this file
 
 ----------------------
