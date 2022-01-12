@@ -28,7 +28,7 @@ Node version = `12.22.3` \
 	- Rocket League item store (current date / specified date)
 	- RL Tracker stats for a user
  <img src="store.png" width="400" height="200" />
- <img src="statistics.png" width="400" height="300" />
+ <img src="statistics.png" width="450" height="300" />
 
 ### PLAYING YOUTUBE AUDIO
 	- play audio of youtube link
