@@ -11,6 +11,7 @@ Node version = `12.22.3` \
 
 ## Categories
 ### BASIC STUFF
+	- Bot's activity set to show server's temperature 
 	- ping and pong 
 	- send website 
 	- send help.txt 
