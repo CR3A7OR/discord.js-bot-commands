@@ -1,0 +1,24 @@
+```
+COMMANDS: 
+--- Use Prefix: > ----
+
+online - is bot online
+website - special website surprise
+temps - shows server temperature 
+rlstore - today's item store 
+	- can also request past stores using * >rlstore YYYY-MM-DD *
+stat (platform) (username) - show rocket league stat {xbox:x / psn:p / steam:s / epic:e / switch:n}
+startmc - starts the minecraft server
+stopmc - stops the minecraft server
+lt - list all temp members in server 
+help - shows this file
+
+----------------------
+
+---- MUSIC ----
+>p URL - play a song from YT
+>skip - skip current song
+>queue - list current queue
+>clear - clear queue and leave VC
+---------------
+```
