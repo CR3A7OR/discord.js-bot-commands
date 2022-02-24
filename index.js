@@ -78,6 +78,11 @@ client.on('message', message => {
 	}
 });
 
+/* Change user's nickname back to something of your choice / previous name*/
+client.on('guildMemberUpdate', (before, after) => {
+        if (after.user.id == "USER ID") {after.setNickname("Nickname to change to");}
+	else if (after.user.id == "USER ID") {after.setNickname(before.nickname);}
+});
 
 client.on('message', message => {
 	if (message.content.indexOf(prefix) !== 0) return;
