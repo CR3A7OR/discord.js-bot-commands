@@ -1,26 +1,25 @@
 ```
-COMMANDS: 
---- Use Prefix: > ----
+│▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬│
+│ COMMANDS │ 𝗣𝗥𝗘𝗙𝗜𝗫 >
+│  》 online  - is bot online
+│  》 website - special website surprise
+│  》 temps   - shows server temperature 
+│  》 rlstore - today's item store 
+│          - can also request past stores using * >rlstore YYYY-MM-DD *
+│  》 stat (platform) (username) - show rocket league stat 
+│             - {xbox:x / psn:p / steam:s / epic:e / switch:n}
+│  》 startmc - starts the minecraft server
+│  》 stopmc  - stops the minecraft server
+│  》 stonk   - add a ticker after command and see the current stock data
+│  》 lt      - list all temp members in server 
+│  》 help    - shows this file
+│▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬│
 
-online - is bot online
-website - special website surprise
-temps - shows server temperature 
-rlstore - today's item store 
-	- can also request past stores using * >rlstore YYYY-MM-DD *
-stat (platform) (username) - show rocket league stat {xbox:x / psn:p / steam:s / epic:e / switch:n}
-startmc - starts the minecraft server
-stopmc - stops the minecraft server
-lt - list all temp members in server
-nuk3 - Factory reset a channel and kick user's with specifc role
-del (amount) - Delete specified amount of messages
-help - shows this file
-
-----------------------
-
----- MUSIC ----
->p URL - play a song from YT
->skip - skip current song
->queue - list current queue
->clear - clear queue and leave VC
----------------
+│▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬│
+│ MUSIC 
+│  》 p URL   - play a song from YT
+│  》 skip    - skip current song
+│  》 queue   - list current queue
+│  》 clear   - clear queue and leave VC
+│▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬│
 ```
