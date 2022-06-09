@@ -4,6 +4,10 @@ const Discord = require('discord.js');
 const { MessageEmbed } = require('discord.js');
 const Canvas = require('canvas');
 const ytdl = require('ytdl-core');
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')
+puppeteer.use(StealthPlugin())
+var striptags = require('striptags');
 
 // create the Discord client
 const client = new Discord.Client();
@@ -13,6 +17,11 @@ const { token } = require ('./config.json');
 /* START UP MESSAGE*/
 client.once('ready', () => {
 	console.log('Ready!');
+});
+
+process.on('unhandledRejection', (reason, p) => {
+  console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+  // application specific logging, throwing an error, or other logic here
 });
 
 /* 
@@ -25,7 +34,6 @@ temptail = new Tail("./logfile");
 temptail.on("line", function(data) {
   client.user.setActivity(data);
 });
-
 
 /* ---------------------------------------- BASIC STUFF ----------------------------------------- */
 
@@ -276,14 +284,15 @@ const applyText = (canvas, text) => {
 
 /* RETURN RL TRACKER RESULTS FOR A USER */
 client.on('message', async message => {
-  if (message.author.bot) return;
+  //if (message.author.bot) return;
   if (message.content.indexOf(prefix) !== 0) return;
-  if (!message.content.startsWith(prefix) || message.author.bot) return;
+  if (!message.content.startsWith(prefix)) return;
+	const { guild } = message;
   const args = message.content.slice(prefix.length).trim().split(/ +/);
   const command = args.shift().toLowerCase();
   const roleName = message.member.roles.cache.find(r => r.name === "temp-job");
 	if (command == 'stat'){
-    if (!args.length){ message.channel.send('Add the name you want to check')}
+    if (!args.length){ message.channel.send('Add your name')}
     else {
 			var platform = "";
 			if (args[0] == "x" || args[0] == "xbox"){platform = 'xbl';}
@@ -297,41 +306,59 @@ client.on('message', async message => {
 			url = encodeURI(url);
       check = UrlCheck(url);
 			if (check){
+        const browser =  await puppeteer.launch({executablePath: '/usr/bin/chromium-browser'});
+        const [page] = await browser.pages();
+        await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36');
+        await page.goto(url, { waitUntil: "networkidle0" });
+        await page.waitFor(1 * 1000);
+        let body = await page.evaluate(() => document.body.innerHTML);
+        body.toString();
+        body = striptags(body);
+        /* PYTHON BASED EMULATION
+          var body = '{}';
+          const {spawn} = require('child_process');
+          const python = spawn('./chrome/runit.py', [`${url}`]);
+          python.stdout.on('data', function (data) {
+          body = data.toString();
+        */
         const https = require('https');
         https.get(url, response => {
           response.setEncoding('utf8');
-          let body = '';
-          response.on('data', data => { body += data;});
+          response.on('data', data => {/* if cloudflare block remove body+=data */ });
           response.on('end', async () => {
             body = JSON.parse(body);
             tour = 9
             pos = 2
             try {
-              if (body.data.segments[9].metadata.name == "Un-Ranked"){tour = 8}
-              if (body.data.segments[4].metadata.name == "Hoops"){pos = 1}
+              if (body.data.segments[9].metadata.name == "Un-Ranked"){
+                    tour = 8
+              }
+              if (body.data.segments[4].metadata.name == "Hoops"){
+                    pos = 1
+              }
             } catch (error) {}
 
 	          try {
-
               const canvas = Canvas.createCanvas(900, 595);
               const context = canvas.getContext('2d');
+
               const background = await Canvas.loadImage('./assets/black.jpg');
               context.drawImage(background, 0, 0, canvas.width, canvas.height);
               
               const box = await Canvas.loadImage('./assets/grey.jpg');
-              context.drawImage(box, 10, 10, 880, 140);
+                context.drawImage(box, 10, 10, 880, 140);
 
               const box2 = await Canvas.loadImage('./assets/grey.jpg');
-              context.drawImage(box2, 10, 160, 415, 180);
+                context.drawImage(box2, 10, 160, 415, 180);
 
               const box3 = await Canvas.loadImage('./assets/grey.jpg');
-              context.drawImage(box3, 435, 160, 455, 180);
+                context.drawImage(box3, 435, 160, 455, 180);
 
               const box4 = await Canvas.loadImage('./assets/grey.jpg');
-              context.drawImage(box4, 10, 350, 415, 235);
+                context.drawImage(box4, 10, 350, 415, 235);
 
               const box5 = await Canvas.loadImage('./assets/grey.jpg');
-              context.drawImage(box5, 435, 350, 455, 235);
+                context.drawImage(box5, 435, 350, 455, 235);
 
               context.strokeStyle = '#0099ff';
               context.strokeRect(0, 0, canvas.width, canvas.height);
@@ -347,26 +374,26 @@ client.on('message', async message => {
 
               //REWARDS
               context.font = '28px sans-serif';
-              context.fillStyle = '#00ccff';
-              context.fillText('REWARD LEVEL', 450, 50);
+                context.fillStyle = '#00ccff';
+                context.fillText('REWARD LEVEL', 450, 50);
               context.font = applyText(canvas, body.data.segments[0].stats.seasonRewardLevel.metadata.rankName);
-              context.fillStyle = '#ffffff';
-              context.fillText(body.data.segments[0].stats.seasonRewardLevel.metadata.rankName, 450 , 100);
+                context.fillStyle = '#ffffff';
+                context.fillText(body.data.segments[0].stats.seasonRewardLevel.metadata.rankName, 450 , 100);
               const reward = await Canvas.loadImage(body.data.segments[0].stats.seasonRewardLevel.metadata.iconUrl);
-              context.drawImage(reward, 725, 5, 150, 150);
+                context.drawImage(reward, 725, 5, 150, 150);
 
               //1v1
               context.font = '28px sans-serif';
-              context.fillStyle = '#00ccff';
-              context.fillText(body.data.segments[pos].metadata.name, 30, 200);
+                context.fillStyle = '#00ccff';
+                context.fillText(body.data.segments[pos].metadata.name, 30, 200);
 
               context.font = '25px sans-serif';
-              context.fillStyle = '#ffffff';
-              context.fillText(body.data.segments[pos].stats.division.metadata.name, 272, 310);
+                context.fillStyle = '#ffffff';
+                context.fillText(body.data.segments[pos].stats.division.metadata.name, 272, 310);
 
               context.font = applyText(canvas, body.data.segments[pos].stats.rating.value);
-              context.fillStyle = '#ffffff';
-              context.fillText(body.data.segments[pos].stats.rating.value + " MMR", 30 , 255);
+                context.fillStyle = '#ffffff';
+                context.fillText(body.data.segments[pos].stats.rating.value + " MMR", 30 , 255);
 
               try {
                 context.font = '25px sans-serif';
@@ -377,41 +404,40 @@ client.on('message', async message => {
               const OneRank = await Canvas.loadImage(body.data.segments[pos].stats.tier.metadata.iconUrl);
               context.drawImage(OneRank, 270, 150, 150, 150);
 
-
               //2v2
               context.font = '28px sans-serif';
-              context.fillStyle = '#00ccff';
-              context.fillText(body.data.segments[pos + 1].metadata.name, 450, 200);
+                context.fillStyle = '#00ccff';
+                context.fillText(body.data.segments[pos + 1].metadata.name, 450, 200);
 
               context.font = '25px sans-serif';
-              context.fillStyle = '#ffffff';
-              context.fillText(body.data.segments[pos + 1].stats.division.metadata.name, 725, 310);
+                context.fillStyle = '#ffffff';
+                context.fillText(body.data.segments[pos + 1].stats.division.metadata.name, 725, 310);
 
               context.font = applyText(canvas, body.data.segments[pos + 1].stats.rating.value);
-              context.fillStyle = '#ffffff';
-              context.fillText(body.data.segments[pos + 1].stats.rating.value + " MMR", 450 , 255);
+                context.fillStyle = '#ffffff';
+                context.fillText(body.data.segments[pos + 1].stats.rating.value + " MMR", 450 , 255);
 		
-		          try {
-		            context.font = '25px sans-serif';
+              try {
+              context.font = '25px sans-serif';
                 context.fillStyle = '#737373';
                 context.fillText(body.data.segments[pos + 1].stats.division.metadata.deltaDown + "v  ⚬  " + body.data.segments[pos + 1].stats.division.metadata.deltaUp + "∧", 450, 300);
-		          } catch (error) {}
+              } catch (error) {}
 
               const twoRank = await Canvas.loadImage(body.data.segments[pos + 1].stats.tier.metadata.iconUrl);
               context.drawImage(twoRank, 725, 150, 150, 150);
 
               //3v3
               context.font = '28px sans-serif';
-              context.fillStyle = '#00ccff';
-              context.fillText(body.data.segments[pos + 2].metadata.name, 30, 400);
+                context.fillStyle = '#00ccff';
+                context.fillText(body.data.segments[pos + 2].metadata.name, 30, 400);
 
               context.font = '25px sans-serif';
-              context.fillStyle = '#ffffff';
-              context.fillText(body.data.segments[pos + 2].stats.division.metadata.name, 272, 560);
+                context.fillStyle = '#ffffff';
+                context.fillText(body.data.segments[pos + 2].stats.division.metadata.name, 272, 560);
 
               context.font = applyText(canvas, body.data.segments[pos + 2].stats.rating.value);
-              context.fillStyle = '#ffffff';
-              context.fillText(body.data.segments[pos + 2].stats.rating.value + " MMR", 30 , 455);
+                context.fillStyle = '#ffffff';
+                context.fillText(body.data.segments[pos + 2].stats.rating.value + " MMR", 30 , 455);
 
               try {
                 context.font = '25px sans-serif';
@@ -422,8 +448,8 @@ client.on('message', async message => {
               const ThreeRank = await Canvas.loadImage(body.data.segments[pos + 2].stats.tier.metadata.iconUrl);
               context.drawImage(ThreeRank, 270, 400, 150, 150);
 		
-		          try {
-		            //TOURNAMENT
+              try {
+                //CHAMP
                 context.font = '28px sans-serif';
                 context.fillStyle = '#00ccff';
                 context.fillText(body.data.segments[tour].metadata.name, 450, 400);
@@ -434,7 +460,7 @@ client.on('message', async message => {
 
                 const CHRank = await Canvas.loadImage(body.data.segments[tour].stats.tier.metadata.iconUrl);
                 context.drawImage(CHRank, 725, 400, 150, 150);
-		          } catch (error) {"STILL BUGGY"}
+              } catch (error) {"TESTING THIS"}
 
 
               //PRINT STUFF
@@ -443,15 +469,91 @@ client.on('message', async message => {
               context.closePath();
               context.clip();
               const attachment = new Discord.MessageAttachment(canvas.toBuffer(), 'statistics.png');
-              message.reply({ files: [attachment] });
-
-	          }catch (error) {console.log(error);}
-          });
-        });
+              message.reply({ files: [attachment] }).then(async (embedmsg) => {
+                await embedmsg.react('🔁').then(() => {
+                  const filter = (reaction, user) => (reaction.emoji.name === '🔁');
+                  let collector = embedmsg.createReactionCollector(
+                    () => {return true;},{
+                    time: 360000,
+                    dispose: true,
+                  });
+                  collector.on('collect', r => r.emoji.name === '🔁' ? message.channel.send(`>stat ${args[0]} ${temp}`) : console.log('No'));
+                });
+              });
+	          }catch (error) {console.log(error); python.on('close', (code) => {});}
+            });
+        }); //comment this one out
+        //});
+        //python.on('close', (code) => {});
+        await browser.close();
       }
       else {message.channel.send("Can't find user");}
     }
 	}
+});
+
+/* --------------------------------------------------------------------------------------------- */
+
+
+
+/* ------------------------------------------- STUFF ------------------------------------------- */
+
+/* PICK A RANDOM NUMBER */
+function getRandomNumberBetween(min,max){
+  return Math.floor(Math.random()*(max-min+1)+min);
+}
+
+/* READ ONE LINE FROM A FILE */
+const lineReader = require('line-reader');
+function getLine(msg) {
+  var lineNum = getRandomNumberBetween(0,728);
+  var fs = require('fs');
+  var readline = require('readline');
+  var cntr = 0;
+  var rl = readline.createInterface({
+      input: fs.createReadStream('./List.txt')
+  });
+
+  rl.on('line', function(line) {
+      if (cntr++ === lineNum) {
+   return msg.edit(`${line}`)
+      }
+  });
+}
+
+/* PRINT ONE RANDOM LINE FROM A TEXT FILE OF LINES, REFRESH THE LINE BY REACTING TO EMOJI (CAN BE USED FOR IMAGES)*/
+client.on('message', async message => {
+if (message.content.indexOf(prefix) !== 0) return;
+if (!message.content.startsWith(prefix)) return;
+const { guild } = message;
+const args = message.content.slice(prefix.length).trim().split(/ +/);
+const command = args.shift().toLowerCase();
+if (command == 'one' && message.channel.id === 'ID') {
+  var lineNum = getRandomNumberBetween(0,728);
+  var fs = require('fs');
+  var readline = require('readline');
+  var cntr = 0;
+
+  var rl = readline.createInterface({
+    input: fs.createReadStream('./List.txt')
+  });
+
+  rl.on('line', function(line) {
+    if (cntr++ === lineNum) {
+      message.channel.send(`${line}`).then(async (embedmsg) => {
+        await embedmsg.react('🔁').then(() => {
+          const filter = (reaction, user) => (reaction.emoji.name === '🔁');
+          let collector = embedmsg.createReactionCollector(
+            () => {return true;},{
+            time: 360000,
+            dispose: true,
+          });
+          collector.on('collect', r => r.emoji.name === '🔁' ? /*embedmsg.edit('>one')*/ getLine(embedmsg) : console.log('No'));
+        });
+      });
+    }
+  });
+};
 });
 
 /* --------------------------------------------------------------------------------------------- */
