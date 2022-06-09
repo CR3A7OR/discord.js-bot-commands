@@ -290,7 +290,6 @@ client.on('message', async message => {
 	const { guild } = message;
   const args = message.content.slice(prefix.length).trim().split(/ +/);
   const command = args.shift().toLowerCase();
-  const roleName = message.member.roles.cache.find(r => r.name === "temp-job");
 	if (command == 'stat'){
     if (!args.length){ message.channel.send('Add your name')}
     else {
