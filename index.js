@@ -58,6 +58,11 @@ client.on('message', message => {
     // send back temperature of server
     si.cpuTemperature().then(tmp=>{message.reply('CPU Main Temp: ' + tmp.main);});
   }
+  else if (message.content.includes(":emoji_of_badword:") || message.content.includes("BADWORD") || message.content.includes("badword")) {
+    var mess = message.content
+    mess = mess.replace("emoji_of_badword","**[REDACTED]**").replace("BADWORD","**[REDACTED]**").replace("badword","**[REDACTED]**");
+    message.channel.bulkDelete(1, true);
+}
 
 });
 
