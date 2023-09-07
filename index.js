@@ -526,6 +526,7 @@ function getLine(msg) {
 }
 
 /* PRINT ONE RANDOM LINE FROM A TEXT FILE OF LINES, REFRESH THE LINE BY REACTING TO EMOJI (CAN BE USED FOR IMAGES)*/
+const list= require('./countries.json');
 client.on('message', async message => {
 if (message.content.indexOf(prefix) !== 0) return;
 if (!message.content.startsWith(prefix)) return;
