@@ -557,7 +557,40 @@ if (command == 'one' && message.channel.id === 'ID') {
       });
     }
   });
-};
+}
+else if (command == 'roast') {
+
+    if (args[0] == 'ls'){
+        var countryList = [];
+        //arr.length = list.countries.length;
+        for (let x in list.countries) {
+            //console.log(list.countries[x].emoji);
+            countryList.push(list.countries[x].emoji);
+        }
+        const embed = new Discord.MessageEmbed()
+              .setTitle(`Country List`)
+              .setColor(0x00AE86)
+              .setDescription(`The list of countries we can roast`)
+              .addFields({ name: 'Countries:', value: `${countryList}`, inline: true })
+              .setFooter(`List of countries`);
+
+            message.channel.send({embed});
+    }
+    else {
+      const items = list.countries.find(object => object.emoji === args[0])
+      if (!items) return message.channel.send(`${args[0]} isn't added yet!`)
+
+      const embed = new Discord.MessageEmbed()
+              .setTitle(`${items.emoji}`)
+              .setColor(0x00AE86)
+              .setAuthor(`${items.name}`)
+              .setDescription(`${items.text}`)
+              .addFields({ name: 'Comments:', value: items.points, inline: true })
+              .setFooter(`${items.conflicts}`);
+
+            message.channel.send({embed});
+    }
+  }
 });
 
 /* --------------------------------------------------------------------------------------------- */
